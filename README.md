@@ -16,12 +16,12 @@ Description of Data Management
 Spectrograms on aristotle were visually inspected by Howard Kim. Interesting intervals were placed in the file ChopList.txt in the following format
 <data filename><tab><start time (YYYY-MM-DDTHH:MM:SS)><tab><end time (YYYY-MM-DDTHH:MM:SS)>
 
-For example, if Howard wanted to extract all data from 14 April, 23:50 to 15 April, 0:35, he would have something like this
+For example, if Howard wanted to extract all data from 14 April, 23:50 to 15 April, 0:35, he would add the following line to ChopList.txt
 201404414-223000-SPS.data.2.5MHz.data 2014-04-14T23:50:00  2014-04-15T00:35:00
 
 To remove files, add the filename to RemoveList.txt.
 
-A cronjob on aristotle runs the script copyRemoveAndChopLists.py, which copies ChopList.txt and RemoveList.txxt to narya each day for files to be chopped or deleted.
+A cronjob on aristotle runs the script copyRemoveAndChopLists.py, which copies ChopList.txt and RemoveList.txt to narya each day for files to be chopped or deleted.
 
 A Note on Time
 -------------------------
@@ -54,4 +54,12 @@ scp_ps_files.py: Script that copies postscript files to aristotle each day.
 rm_files.py: Script that removes files from /mnt/data/vlf_experiment/data_files. It takes the file RemoveList.txt as its input.
  
 
+### Programs on aristotle
+copyRemoveAndChopLists.py: Python script that copies ChopList.txt and RemoveList.txt to narya.
+
+Note on cronjobs
+--------------------
+All cronjobs on narya and cirdan are in /etc/crontab.
+
+The cronjob on aristotle can be edited by typing crontab -e.
 
