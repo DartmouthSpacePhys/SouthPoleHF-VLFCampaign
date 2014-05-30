@@ -2,7 +2,7 @@
 import sys, os, subprocess
 
 RemoveList = open('/mnt/data/vlf_experiment/RemoveList.txt','r')
-DataDir = '/mnt/data/vlf_experiment/'
+DataDir = '/mnt/data/vlf_experiment/data_files/'
 for line in RemoveList:
 	Filename = DataDir + line.strip()
 	try:

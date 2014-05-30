@@ -41,6 +41,12 @@ for infile in fileList:
 	
 	#Make the grayscale
 	subprocess.call(['/usr/local/bin/gray -d {0} {1}'.format(Def, HighResGray)],shell=True,cwd=DataDir)
+	
+	#Convert to pdf
+	subprocess.call(['/usr/bin/ps2pdf {0}'.format(DataDir + 'gray.ps')],shell=True,cwd=DataDir)
+	subprocess.call(['mv {0} {1}'.format(DataDir + 'gray.pdf',infile+'.pdf')],shell=True,cwd=DataDir)
+	subprocess.call(['mv {0} {1}'.format(infile + '.pdf',DataDir + 'ps_files/')],shell=True,cwd=DataDir)
+
 	subprocess.call(['mv {0} {1}'.format(DataDir + 'gray.ps',infile+'.ps')],shell=True,cwd=DataDir)
 	subprocess.call(['mv {0} {1}'.format(infile + '.ps',DataDir + 'ps_files/')],shell=True,cwd=DataDir)
 	#Rename Files

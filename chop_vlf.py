@@ -2,9 +2,9 @@
 import sys, os, datetime, subprocess, calendar
 from struct import unpack, pack
 from math import floor, ceil
-DataDir = '/data/vlf_experiment/'
+DataDir = '/mnt/data/vlf_experiment/data_files/'
 
-processScript = DataDir + 'process_decimated_file.py'
+processScript = '/mnt/data/vlf_experiment/process_decimated_file.py'
 #DataDir = '/Users/mattbroughton/vlf_experiment/data_files/'
 
 remoteDir = 'aurora@157.132.41.82:/daq/vlf_experiment/data_files/'
@@ -22,7 +22,7 @@ def ConvertTime(string):
 	Datetime = datetime.datetime(year = int(DateSplit[0]), month = int(DateSplit[1]), day = int(DateSplit[2]), hour = int(TimeSplit[0]), minute = int(TimeSplit[1]), second = seconds, microsecond = microseconds)
 	return Datetime
 
-ChopList = open('/data/vlf_experiment/ChopList.txt','r')
+ChopList = open('/mnt/data/vlf_experiment/ChopList.txt','r')
 AllFiles = []
 AllStart = []
 AllEnd = []
@@ -32,16 +32,19 @@ for line in ChopList:
 	AllFiles.append(DataDir + split[0])
 	AllStart.append(split[1])
 	AllEnd.append(split[2])
-
+print AllFiles
 #For each file
 for i,infile in enumerate(AllFiles):
-
+	print infile
 	TIME_OFFSET = 946684800
 	SampleFreq=  2.5e6 
 
 
 	#Get start and end times
-	StartDatetime = ConvertTime(AllStart[i])
+	try:
+		StartDatetime = ConvertTime(AllStart[i])
+	except:
+		continue
 	EndDatetime = ConvertTime(AllEnd[i])
 
 	#Get the start and end time into timestamp form
@@ -55,7 +58,10 @@ for i,infile in enumerate(AllFiles):
 	#print EndTimeString
 
 	#Open the file
-	FileIn = open(infile,'r')
+	try:
+		FileIn = open(infile,'r')
+	except:
+		continue
 	FileOut = open(infile + '.%02i%02i%02i.data'%(StartDatetime.hour,StartDatetime.minute,StartDatetime.second), 'w')
 	
 	
@@ -70,9 +76,10 @@ for i,infile in enumerate(AllFiles):
 	print "byte of last record is at {0}".format(FileIn.tell())
 
 	FileTime = unpack('2I',FileIn.read(8))
+	print "FileTime = {0}".format(FileTime)
 	PartialDatetime = datetime.datetime.utcfromtimestamp(FileTime[0] + TIME_OFFSET)
 	FileEndDatetime = datetime.datetime(year = PartialDatetime.year, month = PartialDatetime.month, day = PartialDatetime.day, hour = PartialDatetime.hour, minute = PartialDatetime.minute, second = PartialDatetime.second, microsecond = FileTime[1])
-
+	
 	print "The first file time is {0}".format(FileStartDatetime)
 	print "The last file time is {0}".format(FileEndDatetime)
 	print "chop from {0} to\n{1}".format(StartDatetime,EndDatetime)
@@ -114,7 +121,7 @@ for i,infile in enumerate(AllFiles):
 	subprocess.call(['{0} 0 {1}'.format(processScript,infile + '.%02i%02i%02i.data'%(StartDatetime.hour,StartDatetime.minute,StartDatetime.second))],shell=True,cwd=DataDir)
 
 	#Copy the chopped file to a remote direcotyr
-#	subprocess.call(['scp {0} {1}'.format(infile + '.%02i%02i%02i.data'%(StartDatetime.hour,StartDatetime.minute,StartDatetime.second),remoteDir)],shell=True,cwd=DataDir)
+	subprocess.call(['scp {0} {1}'.format(infile + '.%02i%02i%02i.data'%(StartDatetime.hour,StartDatetime.minute,StartDatetime.second),remoteDir)],shell=True,cwd=DataDir)
 
 	#Move the chopped file to the data_files directory
 #	subprocess.call(['mv {0} {1}'.format(infile + '.%02i%02i%02i.data'%(StartDatetime.hour,StartDatetime.minute,StartDatetime.second),DataDir + 'data_files')],shell=True,cwd=DataDir)
